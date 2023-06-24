@@ -84,3 +84,13 @@ Para diferenciar un usuario de la app de un usuario en un evento (pues cada inst
 ```bash
 python manage.py startapp santa_raffle
 ```
+
+2. Generar tablas de los modelos:
+```bash
+python manage.py makemigrations santa_raffle
+```
+
+3. Aplicar modelos a la base de datos:
+```bash
+python manage.py migrate santa_raffle
+```
