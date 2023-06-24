@@ -9,4 +9,5 @@ media
 # Environments #
 .env
 .venv
+myvenv/
 
