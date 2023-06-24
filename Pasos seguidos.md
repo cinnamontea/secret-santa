@@ -13,9 +13,10 @@ python -m venv myvenv
 ```
 
 2. Iniciar entorno:
-```bash
-. myvenv\Scripts\activate.ps1
-```
+    ```bash
+    . myvenv\Scripts\activate.ps1
+    ```
+    (Usar `deactivate` para salir).
 
 3. Actualizar pip:
 ```bash
@@ -94,3 +95,10 @@ python manage.py makemigrations santa_raffle
 ```bash
 python manage.py migrate santa_raffle
 ```
+
+4. Crear superusuario: (para acceder a admin y ver los modelos)
+    ```bash
+    python manage.py createsuperuser
+    ```
+    (Hice uno para mí no más. Al ejecutar pide username, mail y pass).
+    Con `python manage.py runserver`, y accediendo a http://127.0.0.1:8000/admin se llega a la pantalla de inicio de sesión.
