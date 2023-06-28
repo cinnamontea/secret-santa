@@ -2,18 +2,10 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 #from django.contrib.auth import get_user_model
-from accounts.models import CustomUser
+from accounts.models import *
 import uuid
 
 BaseUser = CustomUser
-
-# Create your models here.
-
-class CryptoKey(models.Model):
-    key_type = models.IntegerChoices("KeyType", "PUBLIC PRIVATE")
-    key_status = models.IntegerChoices("KeyStatus", "ANON KNOWN")
-    value = models.BinaryField(unique=True)
-
 
 '''
 class User(models.Model):
