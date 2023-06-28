@@ -81,7 +81,7 @@ Para diferenciar un usuario de la app de un usuario en un evento (pues cada inst
 | Clave amigo conocido | `giftee_pka` | "$`pk^i`$ encontrado" | La clave pública del amigo secreto al que le tocó regalar (giftee), obtenida a partir del mensaje encriptado $`c_i`$ que solo éste sabe desencriptar con su $`sk_a`$ propio |
 | ID amigo conocido | `giftee_id` | "amigo secreto $`A_i`$" | Identidad del amigo secreto (giftee), obtenida a partir del mensaje encriptado $`c_i`$. Sería básicamente todo lo que esté en su User que no sean claves/contraseñas XD (en caso de que hayan perfiles, PFP, etc.) |
 
-1. Crear una aplicación:
+1. Crear una aplicación para el juego:
 ```bash
 python manage.py startapp santa_raffle
 ```
@@ -91,12 +91,19 @@ python manage.py startapp santa_raffle
 python manage.py makemigrations santa_raffle
 ```
 
-3. Aplicar modelos a la base de datos:
+3. Definir otra app para crear un usuario custom:
 ```bash
-python manage.py migrate santa_raffle
+python manage.py startapp accounts
+python manage.py makemigrations accounts
+python manage.py migrate accounts
 ```
 
-4. Crear superusuario: (para acceder a admin y ver los modelos)
+4. Aplicar los cambios del modelo a la base de datos del proyecto entero:
+```bash
+python manage.py migrate
+```
+
+5. Crear superusuario: (para acceder a admin y ver los modelos)
     ```bash
     python manage.py createsuperuser
     ```
