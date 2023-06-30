@@ -4,16 +4,13 @@ import uuid
 
 class CryptoKeyManager(models.Manager):
     def _create_key(self, ktype, kstatus):
-        new_key = self.create(key_type=ktype, key_status=kstatus)
-        #new_key.save()
-        return new_key#.pk # pk returns the id (as it's saved by create).
+        new_key = self.create(key_type=ktype, key_status=kstatus) # implicit new_key.save()
+        return new_key
     
     def create_pka(self):
-        print("used create_pka")
         return self._create_key(ktype=1, kstatus=1)
     
     def create_ska(self):
-        print("used create_ska")
         return self._create_key(ktype=2, kstatus=1)
 
 
@@ -28,26 +25,6 @@ class CryptoKey(models.Model):
 
 
 class CustomUser(AbstractUser):
-    #def _generate_anon_key(ktype):
-    #    return CryptoKey.objects.create_key(ktype=ktype, kstatus=1)
-    
-    #def generate_pka():
-        #return CryptoKey.objects.create_key(ktype=1, kstatus=1) #PUBLIC=1, ANON=1
-        #new_key = CryptoKey.objects.__create_key(ktype=1, kstatus=1)
-        #new_key = CryptoKey(key_type=1, key_status=1)
-        #new_key.save()
-        #return new_key#.pk
-    #    return CryptoKey.objects.create_pka()
-    #    #return self._generate_anon_key(1)
-
-    #def generate_ska():
-        #return CryptoKey.objects.create_key(ktype=2, kstatus=1) #PRIVATE=2, ANON=1
-        #new_key = CryptoKey.objects.__create_key(ktype=2, kstatus=1)
-        #new_key = CryptoKey(key_type=2, key_status=1)
-        #new_key.save()
-        #return new_key#.pk
-    #    return CryptoKey.objects.create_ska()
-
     likes = models.TextField(blank=True, null=True) #(for now, to make it simple)
     pka = models.OneToOneField(CryptoKey, related_name="pka", on_delete=models.CASCADE, null=True, editable=False)
     ska = models.OneToOneField(CryptoKey, related_name="ska", on_delete=models.CASCADE, null=True, editable=False)
@@ -56,7 +33,7 @@ class CustomUser(AbstractUser):
         return self.username
     
     def save(self, *args, **kwargs):
-        # Do custom logic here (e.g. validation, logging, call third party service)
+        # Do custom logic here (key creation in this case)
         if self.pka is None and self.ska is None:
             self.pka = CryptoKey.objects.create_pka()
             self.ska = CryptoKey.objects.create_ska()

@@ -4,8 +4,6 @@ from django.utils import timezone
 from accounts.models import CustomUser, CryptoKey
 import uuid
 
-#BaseUser = CustomUser
-
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -26,7 +24,7 @@ class Event(models.Model):
     def get_default(cls):
         eventclass, created = cls.objects.get_or_create(
             id = uuid.uuid4,
-            defaults = dict(organizer = models.SET_NULL,#SET_DEFAULT,
+            defaults = dict(organizer = models.SET_NULL,
                           title='Deleted Event',
                           raffle_date = models.SET_NULL,
                           event_date = models.SET_NULL,
