@@ -10,9 +10,11 @@ Explicar el secret santa y el esquema propuesto.
 1. Crear una aplicación web que implemente un juego de amigo secreto que otorgue las siguientes garantías:
     - Ningún participante A puede obtener el nombre de su amigo secreto B (donde B le regala a A).
     - Las conversaciones entre los participantes deben ser privadas.
+2. Un usuario puede crear eventos e invitar a otros usuarios registrados.
+3. El organizador de un evento debe poder hacer el sorteo una vez que todos los invitados hayan aceptado participar.
+4. Cada usuario tiene un _dashboard_ donde puede ver todos los eventos en los que participa.
 
-
-## Operación del Sistema
+## Avances
 
 **Disclaimer**: En este momento estamos preparando el backend y asegurándonos que funcione. Aún no hemos implementado nada relacionado a criptografía, sólo tenemos un «esqueleto» primordial del algoritmo propuesto.
 
