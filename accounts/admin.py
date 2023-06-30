@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import *
-from .models import *
+from .models import CustomUser, CryptoKey
 from santa_raffle.models import * #Event, Participant
 
 
