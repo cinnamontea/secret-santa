@@ -75,9 +75,11 @@ El lenguaje de programación elegido para el proyecto es Python. La aplicación 
 
 **Disclaimer**: En este momento estamos preparando el backend y asegurándonos que funcione. Aún no hemos implementado nada relacionado a criptografía, sólo tenemos un «esqueleto» primordial del algoritmo propuesto.
 
-Se han implementado [modelos](./accounts/models.py) que representan a los usuarios del sistema y las claves criptográficas que están asociadas a cada uno de ellos, y [modelos](./santa_raffle/models.py) para representar un juego (o evento) y sus participantes.
+Se han implementado [modelos](./accounts/models.py) que representan a los usuarios del sistema y las claves criptográficas que están asociadas a cada uno de ellos. El modelo de usuarios es una clase custom basada en el usuario abstracto que provee django. Esto permite reutilizar campos y funcionalidad implementada por el framework. Por otro lado, se implementaron [modelos](./santa_raffle/models.py) para representar un juego (o evento) y sus participantes. Puede ver más detalles de los campos de cada modelo en las tablas que se presentan [aquí](./Pasos%20seguidos.md#crear-modelos).
 
 En términos de comportamiento implementado, cuando se crea un usuario en el sistema, se generan objetos que representan a las claves pública y privada del usuario y se asocian a éste. Por el momento, no se está usando nigún algoritmo de generación de claves. Lo implementado sólo tiene como propósito verificar que las piezas del backend están funcionando como se espera.
+
+Finalmente, se registraron los modelos que se deben mostrar en la página de administración, ocultando los campos a los que los administradores no deberían tener acceso (por ejemplo, los valores de las claves privadas asociadas a los usuarios).
 
 ## Preguntas/Problemas
 
