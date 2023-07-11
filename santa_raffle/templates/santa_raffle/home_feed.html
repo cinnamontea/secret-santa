@@ -6,6 +6,16 @@
         <div>
             <h1><a href="/">Secret Santa</a></h1>
             <h2>Welcome!</h2>
+            <div>
+                {% if request.user.is_authenticated %}
+                    Estás autenticade como <strong> {{ request.user.username }} </strong> | 
+                    <a href="{% url 'logout' %}">Cerrar Sesión</a>
+                {% else %}
+                    No has iniciado sesión. | 
+                    <a href="{% url 'login' %}">Iniciar Sesión</a> | 
+                    <a href="{% url 'register' %}">Registrarse</a>
+                {% endif %}
+            </div>
         </div>
 
         <div>

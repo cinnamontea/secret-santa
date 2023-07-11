@@ -5,6 +5,8 @@ from .models import Event
 # Create your views here.
 
 def home_feed(request):
+    context = {}
     #my_events = Event.objects.filter(organizer=)
     events = Event.objects.filter(created_date__lte=timezone.now()).order_by('created_date')
-    return render(request, 'santa_raffle/home_feed.html', {'events': events} )
+    context['events'] = events
+    return render(request, 'santa_raffle/home_feed.html', context)
