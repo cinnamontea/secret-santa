@@ -1,11 +1,14 @@
+{% load static %}
+
 <!DOCTYPE html>
 
 <html>
     <head>
-        <title>Register</title>
+        <title>Registro</title>
     </head>
 
     <body>
+        <h1>Registro</h1>
         <form method="post">
             {% csrf_token %}
             <div>
@@ -28,6 +31,16 @@
                 <input type="password" id="password2" name="password2" required>
             </div>
 
+            <input type="hidden" id="pubdl" name="pubdl" value="0">
+            <input type="hidden" id="pridl" name="pridl" value="0">
+
+            <div id="keys">
+                <p>
+                    <strong>Importante!</strong> Para poder registrarte necesitas tener un par de claves pública y privada. Presiona el siguiente botón para generarlas.
+                </p>
+                <div><button type="button" onclick="genKeys()">Generar Claves</button></div>
+            </div>
+
             <div>
                 {% for field in registration_form %}
                     <p>
@@ -43,7 +56,9 @@
 				{% endif %}
             </div>
 
-            <button type="submit">Registrarse</button>
+            <button type="submit" id="dbtn" disabled>Registrarse</button>
         </form>
+
+        <script src="{% static 'scripts/crypto.js' %}"></script>
     </body>
 </html>
