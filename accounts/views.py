@@ -27,6 +27,9 @@ def register_view(request, *args, **kwargs):
         else:
             context['registration_form'] = form
 
+    else:
+        context['registration_form'] = CustomUserCreationForm()
+
     return render(request, 'accounts/register.html', context)
 
 
@@ -51,6 +54,9 @@ def login_view(request, *args, **kwargs):
         
         else:
             context['login_form'] = form
+
+    else:
+        context['login_form'] = LoginForm()
     
     return render(request, 'accounts/login.html', context)
 
