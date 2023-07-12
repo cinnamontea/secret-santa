@@ -6,12 +6,17 @@ from .models import Event, Participant, CustomUser
 
 def home_feed(request):
     user = None
+    events = None
+    context = {}
+
     if request.user.is_authenticated:
         user = request.user
-    participant = user.participant_set.all().order_by('event__created_date')
-    events = participant.values('event__id', 'event__organizer', 'event__title')
-    for e in events:
-        e['event__organizer'] = CustomUser.objects.get(id=e['event__organizer'])
+        participant = user.participant_set.all().order_by('event__created_date')
+        events = participant.values('event__id', 'event__organizer', 'event__title')
+        for e in events:
+            e['event__organizer'] = CustomUser.objects.get(id=e['event__organizer'])
+        context['events'] = events
+    #return render(request, 'santa_raffle/home_feed.html', context)
     return render(request, 'santa_raffle/home_feed.html', {'events': events} )
 
 
@@ -22,3 +27,4 @@ def event_detail(request, pk):
                   {'event': event,
                    'members': members,
                    })
+
