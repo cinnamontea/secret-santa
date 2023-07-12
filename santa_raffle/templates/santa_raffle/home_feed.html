@@ -8,8 +8,8 @@ Welcome!
     <!-- En esta sección habrá una lista de los eventos a los que estás asociado. -->
     {% for event in events %}
         <div>
-            <a href="{% url 'event_detail' pk=event.pk %}"><h3>{{ event }}</h3></a>
-            <p>Creado por: <a href="profile/"> {{ event.organizer }} </p></a>
+            <a href="{% url 'event_detail' pk=event.event__id %}"><h3>{{ event.event__title }}</h3></a>
+            <p>Creado por: <a href="profile/"> {{ event.event__organizer }} </p></a>
             <br>
         </div>
     {% empty %}
