@@ -5,7 +5,10 @@ from .models import Event
 # Create your views here.
 
 def home_feed(request):
-    events = Event.objects.filter(created_date__lte=timezone.now()).order_by('created_date')
+    user = None
+    if request.user.is_authenticated:
+        user = request.user
+    events = Event.objects.filter(organizer=user).order_by('created_date')
     return render(request, 'santa_raffle/home_feed.html', {'events': events} )
 
 def event_detail(request, pk):
