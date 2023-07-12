@@ -1,0 +1,29 @@
+{% extends 'santa_raffle/base.html' %}
+
+{% block subtitle %}
+    Eventos
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h3>{{ event.title }}</h3>
+        <p>Fecha de creación: {{ event.created_date }}</p>
+            {% if event.event_date %}
+                <p>Fecha programada para el evento: {{ event.event_date }}</p> <!-- idea: (faltan X días!) -->
+            {% endif %}
+        <div>
+            <p>Miembros:</p>
+            <ul>
+                {% for member in members %}
+                    <li>
+                        {{ member.owner__username }}
+                        {% if member.owner__id == event.organizer.pk %}
+                            <i>(organizador)</i>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <br>
+    </div>
+{% endblock %}
