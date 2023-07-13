@@ -28,24 +28,23 @@
                         {% if member.owner__id == event.organizer.pk %}
                             <i>(organizador)</i>
                         {% endif %}
+                        <!--
+                        {% if request.user.pk == member.owner__id %}
+                            <input type="checkbox" value="{{member.confirmed}}"/>
+                        {% else %}
+                            <input type="checkbox" value="{{member.confirmed}}" disabled/>
+                        {% endif %}
+                        -->
+                        <input type="checkbox" value="{{member.confirmed}}" disabled/>
                     </li>
                 {% endfor %}
             </ul>
-            <div>
+            <div><!-- hidden="True"-->
                 <h4>Invitar usuarios:</h4>
                 <form action="{% url 'event_invites' pk=event.pk %}" method="POST"> {% csrf_token %}
-                    <!--<input id="owner" type="text" name="owner">
-                        {{form}}
-                    <input type='submit' value="Enviar"></input>-->
-                    
-                    <select multiple>
-                        {% for user in form %}
-                            {% if request.user != user %}
-                                <option value={{user}}></option>
-                            {% endif %}
-                        {% endfor %}
-                        <input type='submit' value="Enviar"></input>  
-                    </select>
+                    <!--input id="owner" type="text" name="owner">-->
+                        {{ form.as_p }}
+                    <input type='submit' value="Enviar"></input>
                 </form>
             </div>
         </div>

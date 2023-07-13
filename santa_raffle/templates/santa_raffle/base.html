@@ -1,8 +1,7 @@
 <html>
     <head>
         <title>Secret Santa</title>
-    </head>
-    <body>
+
         <div>
             <h1><a href="/">Secret Santa</a></h1>
             <div>
@@ -12,18 +11,24 @@
                 </h2>
             </div>
         </div>
+    </head>
+    <body>
 
-        <!--
-        <div>
-            <p>(Imagina que esto es un botón para empezar un nuevo evento...)</p>
-            <strong>[Crear Evento]</strong>
-        </div>
-        -->
-        <br>
-        <div>
-            {% block content %}
-            {% endblock %}
-        </div>
+    <div>
+        {% block notification %}
+        {% endblock %}
+    </div>
+    <!--
+    <div>
+        <p>(Imagina que esto es un botón para empezar un nuevo evento...)</p>
+        <strong>[Crear Evento]</strong>
+    </div>
+    -->
+    <br>
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
 
     </body>
 </html>
