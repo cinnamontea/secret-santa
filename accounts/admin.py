@@ -22,8 +22,8 @@ class EventAdmin(admin.ModelAdmin):
 
 class ParticipantAdmin(admin.ModelAdmin):
     model = Participant
-    list_display = ["owner", "event", "giftee_id",]
-    exclude = ("gifter_pka", "gifter_prk", "gifter_srk", "giftee_pka", "giftee_id",)
+    list_display = ["owner", "event", "giftee_data"]
+    #exclude = ("gifter_pka", "gifter_prk", "gifter_srk", "giftee_pka", "giftee_id",)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

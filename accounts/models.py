@@ -15,13 +15,8 @@ class CryptoKeyManager(models.Manager):
 
 
 class CryptoKey(models.Model):
-    TypeChoices = models.IntegerChoices("TypeChoices", "PUBLIC PRIVATE")
-    StatusChoices = models.IntegerChoices("StatusChoices", "ANON KNOWN")
     objects = CryptoKeyManager()
-    
-    key_type = models.CharField(choices=TypeChoices.choices, max_length=1, null=True)
-    key_status = models.CharField(choices=StatusChoices.choices, max_length=1, null=True)
-    value = models.UUIDField(default=uuid.uuid4, editable=False)
+    value = models.TextField(max_length=200, editable=False)
 
 
 class CustomUser(AbstractUser):
