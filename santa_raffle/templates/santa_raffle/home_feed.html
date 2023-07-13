@@ -8,6 +8,8 @@ Welcome!
     {% if request.user.is_authenticated %}
         Estás autenticade como <strong> {{ request.user.username }} </strong> | 
         <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        <br> <br>
+        <b><a href="{% url 'new_event' %}">Crear Evento</a></b>
     {% else %}
         No has iniciado sesión. | 
         <a href="{% url 'login' %}">Iniciar Sesión</a> | 

@@ -1,5 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
+from django.shortcuts import render, get_object_or_404, redirect
+from .forms import EventForm, ParticipantForm
 from .models import Event, Participant, CustomUser
 
 # Create your views here.
@@ -27,4 +27,33 @@ def event_detail(request, pk):
                   {'event': event,
                    'members': members,
                    })
+
+
+def new_event(request):
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.organizer = request.user
+            event.save()
+            return redirect('event_detail', pk=event.pk)
+    else:
+        form = EventForm()
+
+    return render(request, 'santa_raffle/event_edit.html', {'form': form})
+
+
+def edit_event(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    if request.method == "POST":
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.organizer = request.user
+            event.save()
+            return redirect('event_detail', pk=event.pk)
+    else:
+        form = EventForm(instance=event)
+    
+    return render(request, 'santa_raffle/event_edit.html', {'form': form})
 

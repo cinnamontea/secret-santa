@@ -6,7 +6,11 @@
 
 {% block content %}
     <div>
-        <h3>{{ event.title }}</h3>
+        <h3>{{ event.title }}
+        {% if request.user.pk == event.organizer.pk %}
+            (<a href="{% url 'edit_event' pk=event.pk %}">Editar</a>)
+        {% endif %}
+        </h3>
         <p>Fecha de creación: {{ event.created_date }}</p>
             {% if event.event_date %}
                 <p>Fecha programada para el evento: {{ event.event_date }}</p> <!-- idea: (faltan X días!) -->
