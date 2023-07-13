@@ -27,10 +27,9 @@ class Event(models.Model):
     
     def get_members_id(self):
         return self.participant_set.values('owner__id', 'owner__username')
-        #return self.participant_set.all().values_list('owner__username')
     
     def save(self, *args, **kwargs):
-        if self.organizer is not None:
+        if self.organizer is not None and not self.participant_set.filter(owner=self.organizer):
             # create a participant connected to the user and this event
             Participant.objects.update_or_create(owner=self.organizer, event=self)
             # add user as an event member
@@ -44,8 +43,9 @@ class Event(models.Model):
 class Participant(models.Model):
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    confirmed = models.BooleanField(default=False)
     #gifter_pka = models.OneToOneField(CryptoKey, related_name="gifter_pka", null=True, on_delete=models.SET_NULL)
     #gifter_prk = models.OneToOneField(CryptoKey, related_name="gifter_prk", null=True, on_delete=models.SET_NULL)
     #gifter_srk = models.OneToOneField(CryptoKey, related_name="gifter_srk", null=True, on_delete=models.SET_NULL)
     #giftee_pka = models.OneToOneField(CryptoKey, related_name="giftee_pka", null=True, on_delete=models.SET_NULL)
-    giftee_data = models.TextField(max_length=200, null=True)
+    giftee_data = models.TextField(max_length=200, null=True, blank=True)

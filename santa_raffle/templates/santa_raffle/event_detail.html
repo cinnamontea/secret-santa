@@ -16,7 +16,11 @@
                 <p>Fecha programada para el evento: {{ event.event_date }}</p> <!-- idea: (faltan X días!) -->
             {% endif %}
         <div>
-            <p>Miembros:</p>
+            <p>Miembros:
+                {% if request.user.pk == event.organizer.pk %}
+                    (<a href="{% url 'edit_event' pk=event.pk %}">Editar</a>)
+                {% endif %}
+            </p>
             <ul>
                 {% for member in members %}
                     <li>
@@ -27,6 +31,23 @@
                     </li>
                 {% endfor %}
             </ul>
+            <div>
+                <h4>Invitar usuarios:</h4>
+                <form action="{% url 'event_invites' pk=event.pk %}" method="POST"> {% csrf_token %}
+                    <!--<input id="owner" type="text" name="owner">
+                        {{form}}
+                    <input type='submit' value="Enviar"></input>-->
+                    
+                    <select multiple>
+                        {% for user in form %}
+                            {% if request.user != user %}
+                                <option value={{user}}></option>
+                            {% endif %}
+                        {% endfor %}
+                        <input type='submit' value="Enviar"></input>  
+                    </select>
+                </form>
+            </div>
         </div>
         <br>
     </div>

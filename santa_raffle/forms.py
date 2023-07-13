@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event, Participant
+from .models import Event, Participant, CustomUser
 
 class EventForm(forms.ModelForm):
 
@@ -8,8 +8,11 @@ class EventForm(forms.ModelForm):
         fields = ('title', 'event_date', )
 
 
-class ParticipantForm(forms.ModelForm):
+class ParticipantForm(forms.Form):
+    #print(CustomUser.objects.only('username'))
+    owner = forms.ModelMultipleChoiceField(CustomUser.objects.only('id', 'username'))
+    #owner = forms.TypedChoiceField(choices=CustomUser.objects.values(), label="")
 
-    class Meta:
-        model = Participant
-        fields = ('owner', )
+    #class Meta:
+    #    model = Participant
+    #    fields = ('owner', )
