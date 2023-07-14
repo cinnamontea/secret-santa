@@ -16,7 +16,7 @@ class Event(models.Model):
                                      through="Participant",
                                      through_fields=("event", "owner"))
     #members = models.ManyToManyField(CustomUser, through="Participant", related_name="user_members", blank=True)#, on_delete=models.SET_NULL)
-    pkey_list = models.ManyToManyField(CryptoKey, symmetrical=False)
+    pkey_list = models.ManyToManyField(CryptoKey)
 
     def __str__(self):
         return self.title

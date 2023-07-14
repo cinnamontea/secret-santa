@@ -7,5 +7,6 @@ urlpatterns = [
     path('event/new', views.new_event, name='new_event'),
     path('event/<uuid:pk>/edit/', views.edit_event, name='edit_event'),
     path('event/<uuid:pk>/invited/', views.event_invites, name='event_invites'),
-    path('event/<uuid:pk>/confirm/<int:resp>', views.update_confirmation, name='update_confirmation')
+    path('event/<uuid:pk>/confirm/<int:resp>', views.update_confirmation, name='update_confirmation'),
+    path('event/<uuid:pk>/start/', views.start_raffle, name='start_raffle')
 ]

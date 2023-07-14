@@ -8,7 +8,7 @@
     <div>
         <h3>{{ event.title }}
         {% if request.user.pk == event.organizer.pk %}
-            (<a href="{% url 'edit_event' pk=event.pk %}">Editar</a>)
+            <a href="{% url 'edit_event' pk=event.pk %}"><button>Editar</button></a>
         {% endif %}
         </h3>
         <p>Fecha de creación: {{ event.created_date }}</p>
@@ -17,9 +17,11 @@
             {% endif %}
         <div>
             <p>Miembros:
+                <!--
                 {% if request.user.pk == event.organizer.pk %}
                     (<a href="{% url 'edit_event' pk=event.pk %}">Editar</a>)
                 {% endif %}
+                -->
             </p>
             <ul>
                 {% for member in members %}
@@ -39,14 +41,20 @@
                     </li>
                 {% endfor %}
             </ul>
-            <div><!-- hidden="True"-->
-                <h4>Invitar usuarios:</h4>
-                <form action="{% url 'event_invites' pk=event.pk %}" method="POST"> {% csrf_token %}
-                    <!--input id="owner" type="text" name="owner">-->
-                        {{ form.as_p }}
-                    <input type='submit' value="Enviar"></input>
+            
+            {% if request.user.pk == event.organizer.pk %}
+                <form action="{% url 'start_raffle' pk=event.pk %}" method="POST"> {% csrf_token %}
+                    <button type="submit">Iniciar sorteo</button>
                 </form>
-            </div>
+
+                <div><!-- hidden="True"-->
+                    <h4>Invitar usuarios:</h4>
+                    <form action="{% url 'event_invites' pk=event.pk %}" method="POST"> {% csrf_token %}
+                            {{ form.as_p }}
+                        <input type='submit' value="Enviar"></input>
+                    </form>
+                </div>
+            {% endif %}
         </div>
         <br>
     </div>

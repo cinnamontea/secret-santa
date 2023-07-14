@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import EventForm, ParticipantForm, EventMembersForm
-from .models import Event, Participant, CustomUser
+from .forms import EventForm, EventMembersForm, EventMembersFormSet
+from .models import Event, Participant, CustomUser, CryptoKey
+from django.utils import timezone
+from random import shuffle
 
 # Create your views here.
 
@@ -24,8 +26,8 @@ def event_detail(request, pk):
     event = get_object_or_404(Event, pk=pk)
     members = event.get_members_id()
 
-    form = EventMembersForm()
-    #form = ParticipantFormSet(queryset=CustomUser.objects.exclude(id=request.user.id))
+    # EventMembersFormSet populates the list of invitable people:
+    form = EventMembersFormSet(members.values_list('owner__id'))
     return render(request, 'santa_raffle/event_detail.html', 
                   {'event': event,
                    'members': members,
@@ -36,7 +38,6 @@ def event_detail(request, pk):
 def new_event(request):
     if request.method == "POST":
         form = EventForm(request.POST)
-        print(form)
         if form.is_valid():
             event = form.save(commit=False)
             event.organizer = request.user
@@ -66,41 +67,27 @@ def edit_event(request, pk):
     return render(request, 'santa_raffle/event_edit.html', {'form': form})
 
 
-#def event_invite_form_set(request):
-#    formset = ParticipantFormSet(request.POST)
-#    return render(request, 'santa_raffle/event_detail.html', {'form': formset})
-
-
 def event_invites(request, pk):
-    print(">>pk:", pk)
     if request.method == "POST":
         invited_event = get_object_or_404(Event, pk=pk)
-        print(">>event:", invited_event, invited_event.members, invited_event.members)
-        #form = ParticipantFormSet(request.POST)
-        #print(request.POST)
+
+        # EventMembersForm receives the exact same fields as Set, but collects responses:
         form = EventMembersForm(request.POST)
-        if form.is_valid():# and CustomUser.filter(username__iexact=user):
-            #for formuser in form.get_queryset():
-            #print("formuser:", formuser)
-            #user_list = form.data['members']
+        if form.is_valid():
             for user_id in form.data['members']:
-                print(">>user_id:", user_id)
                 invited_user = get_object_or_404(CustomUser, pk=user_id)
                 participant = None
                 if not invited_event.members.contains(invited_user):
                     participant = Participant.objects.create(owner=invited_user, event=invited_event)
-                    print(participant, participant.owner, participant.event)
-                    #participant = Participant(owner=invited_user, event=invited_event)
                     invited_event.members.add(invited_user)
-                #participant.event = event
-                #participant.save()
                 return redirect('event_detail', pk=invited_event.pk)
     else:
-        form = ParticipantForm()
+        form = EventMembersForm()
     return render(request, 'santa_raffle/event_detail.html', {'form': form})
 
 
 def update_confirmation(request, pk, resp):
+    # TO-DO: still needs to receive the user's key to add it to pkey_list!
     if request.method == "POST":
         resp = bool(resp)
         event = get_object_or_404(Event, pk=pk)
@@ -112,3 +99,37 @@ def update_confirmation(request, pk, resp):
             participant.delete()
         return redirect('/')
 
+
+def start_raffle(request, pk):
+    if request.method == "POST":
+        event = get_object_or_404(Event, pk=pk)
+        participants = event.participant_set.all()
+
+        # Check that the user has permission:
+        req1 = request.user == event.organizer
+        # And that all users have accepted:
+        req2 = True
+        for participant in participants:
+            req2 = req2 and participant.confirmed
+        if req1 and req2:
+            # DO RAFFLE
+            # -------TEMP CODE----------
+            # for now, pkeys'll be generated randomly (to have something to sort)
+            n_mems = len(participants)
+            while len(event.pkey_list.all()) != n_mems:
+                key_list = [CryptoKey.objects.create() for _ in range(n_mems)]
+                [event.pkey_list.add(key) for key in key_list]
+            
+            # create shuffled list of indexes:
+            order_list = [*range(n_mems)]
+            shuffle(order_list)
+            # set shuffled 'order' indexes:
+            for i,k in enumerate(event.pkey_list.all()):
+                k.order = order_list[i]
+                k.save()
+            # -------TEMP CODE----------
+            event.raffle_date = timezone.now()
+            event.save()
+        return redirect('event_detail', pk=event.pk)
+    else:
+        return render(request, 'santa_raffle/event_detail.html')
