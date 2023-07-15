@@ -11,7 +11,7 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ["email", "username",]
+    list_display = ["email", "username","pubkey"]
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class EventAdmin(admin.ModelAdmin):
 
 class ParticipantAdmin(admin.ModelAdmin):
     model = Participant
-    list_display = ["owner", "event", "giftee_data", "confirmed"]
+    list_display = ["owner", "event", "confirmed"]
     #exclude = ("gifter_pka", "gifter_prk", "gifter_srk", "giftee_pka", "giftee_id",)
 
 

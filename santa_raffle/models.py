@@ -45,8 +45,9 @@ class Participant(models.Model):
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     confirmed = models.BooleanField(default=False)
-    #gifter_pka = models.OneToOneField(CryptoKey, related_name="gifter_pka", null=True, on_delete=models.SET_NULL)
-    #gifter_prk = models.OneToOneField(CryptoKey, related_name="gifter_prk", null=True, on_delete=models.SET_NULL)
-    #gifter_srk = models.OneToOneField(CryptoKey, related_name="gifter_srk", null=True, on_delete=models.SET_NULL)
-    #giftee_pka = models.OneToOneField(CryptoKey, related_name="giftee_pka", null=True, on_delete=models.SET_NULL)
-    giftee_data = models.TextField(max_length=200, null=True, blank=True)
+    # The event key is a symmetric AES key. It is encrypted using the owner's public RSA-OAEP key.
+    event_key = models.TextField(null=False, blank=True)
+    # The contents of the following fields are encrypted with the participant's event key.
+    gifter_pka = models.TextField(null=False, blank=True)
+    giftee_pka = models.TextField(null=False, blank=True)
+    giftee_id = models.TextField(null=False, blank=True)

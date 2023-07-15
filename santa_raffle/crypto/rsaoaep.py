@@ -1,3 +1,9 @@
+"""
+This module provides all the materials to use RSA-OAEP.
+It is used to implement the parts of the security protocol that run on the server.
+"""
+
+
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 from base64 import b64encode, b64decode
@@ -55,6 +61,21 @@ def decrypt(ciphertxt, privkey):
                                                                               algorithm=hashes.SHA256(), label=None))
 
     return ptxt.decode('utf-8')
+
+
+def import_pk_string(s):
+    """
+    Imports a public key from a PEM formatted string which contains the key in SPKI format.
+
+    Arguments
+    ---------
+        s : str - PEM formatted string.
+
+    Returns
+    -------
+        RSAPublicKey - The imported public key.
+    """
+    return serialization.load_pem_public_key(s.encode('utf-8'))
 
 
 def importSKFromFile(path, password=None):
