@@ -38,7 +38,11 @@
                             <input type="checkbox" value="{{member.confirmed}}" disabled/>
                         {% endif %}
                         -->
-                        <input type="checkbox" value="{{member.confirmed}}" disabled/>
+                        {% if member.confirmed %}
+                            <input type="checkbox" checked disabled/>
+                        {% else %}
+                            <input type="checkbox" disabled/>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>
