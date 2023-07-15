@@ -17,7 +17,7 @@ En el caso de esta aplicación, la información confidencial del juego es quién
 2. En el lado del cliente (usando la WebCrypto API) se genera un par de claves pública y privada, y se produce un archivo que contiene cada una.
 3. El usuario descarga dichos archivos y los guarda en un lugar seguro. (Q: ¿Sería buena idea encriptar la clave privada con la misma contraseña del usuario?)
 4. Una vez que descarga los archivos se habilita el botón de registro.
-5. El usuario presiona el botón de registro y se envía los datos del formulario. El backend de seguridad de Django se encarga de guardar los datos en la BD.
+5. El usuario presiona el botón de registro y se envía los datos del formulario, junto con su calve **pública**. (El backend de seguridad de Django se encarga de guardar la **password** de forma segura en la BD. La clave pública se almacena en texto plano).
 
 ### Creación de Evento
 
@@ -33,4 +33,17 @@ En el caso de esta aplicación, la información confidencial del juego es quién
 3. El usuario hace click en un evento al que está invitado, y en la vista que se abre puede aceptar la invitación enviando su clave pública.
 4. El sistema marca su invitación como aceptada
 
+### Iniciar Sorteo
+
+1. El organizador de un evento se autentifica en el sitio.
+2. En su dashboard, hace click en el evento para ir a la vista de detalles.
+3. En la vista de detalles presiona un botón para iniciar el sorteo.
+4. El servidor verifica que al menos 3 participantes del evento hayan aceptado su invitación, de lo contrario indica al organizador que no se puede inicar el sorteo.
+5. Si hay suficientes participantes, el servidor elimina aquellos que no aceptaron su invitación.
+6. El servidor genera una clave simétrica $k$ para AES-CTR.
+7. Por cada participante $p_i$, realiza lo siguiente:
+    1. Obtiene la clave pública $pk_i$ de $p_i$.
+    2. Calcula $event_key=RSA-OAEP_{pk_i}(k)$ y la guarda en el campo `event_key` del participante $p_i$.
+    3. Calcula $cpk=AES-CTR_{k}(pk_i)$, crea una `CryptoKey` con `value` igual a $cpk$, y la relaciona al evento.
+8. El servidor descarta $k$.
 

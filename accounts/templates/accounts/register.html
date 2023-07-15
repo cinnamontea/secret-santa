@@ -33,12 +33,18 @@
 
             <input type="hidden" id="pubdl" name="pubdl" value="0">
             <input type="hidden" id="pridl" name="pridl" value="0">
+            <input type="hidden" id="pubkey" name="pubkey" value="0">
 
-            <div id="keys">
+            <div>
                 <p>
                     <strong>Importante!</strong> Para poder registrarte necesitas tener un par de claves pública y privada. Presiona el siguiente botón para generarlas.
                 </p>
                 <div><button type="button" onclick="genKeys()">Generar Claves</button></div>
+                <p id="key_msgs"></p>
+                <a id="publink" style="display:none">Descargar Clave Pública</a>
+                <br>
+                <a id="privlink" style="display:none">Descargar Clave Privada</a>
+                <br>
             </div>
 
             <div>
@@ -60,5 +66,6 @@
         </form>
 
         <script src="{% static 'scripts/crypto.js' %}"></script>
+        <script src="{% static 'scripts/register.js' %}"></script>
     </body>
 </html>
