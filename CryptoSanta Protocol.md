@@ -40,10 +40,15 @@ En el caso de esta aplicación, la información confidencial del juego es quién
 3. En la vista de detalles presiona un botón para iniciar el sorteo.
 4. El servidor verifica que al menos 3 participantes del evento hayan aceptado su invitación, de lo contrario indica al organizador que no se puede inicar el sorteo.
 5. Si hay suficientes participantes, el servidor elimina aquellos que no aceptaron su invitación.
-6. El servidor genera una clave simétrica $k$ para AES-CTR.
-7. Por cada participante $p_i$, realiza lo siguiente:
-    1. Obtiene la clave pública $pk_i$ de $p_i$.
-    2. Calcula $event_key=RSA-OAEP_{pk_i}(k)$ y la guarda en el campo `event_key` del participante $p_i$.
-    3. Calcula $cpk=AES-CTR_{k}(pk_i)$, crea una `CryptoKey` con `value` igual a $cpk$, y la relaciona al evento.
+6. Se revuelve una lista con los $n$ participantes que sí aceptaron la invitación.
+7. Por cada participante $p_i$ de la lista revuelta, el servidor realiza lo siguiente:
+    1. Genera una clave simétrica $k$ para el algoritmo AES-CTR.
+    2. Obtiene la clave pública $pk_i$ de $p_i$.
+    3. Calcula $event_key=RSA-OAEP_{pk_i}(k)$ y la guarda en el campo `event_key` del participante $p_i$.
+    4. El amigo secreto (gifter) de $p_i$ es $p_{(i-1) mod n}$, y su clave pública es $gifter_pk$.
+    5. El participante que debe recibir un regalo (giftee) de $p_i$ es $p_{(i+1) mod n}$. Su nombre de usuario es $giftee_id$ y su clave pública es $giftee_pk$.
+    6. Calcula $AES-CTR_{k}(giftee_id)$ y guarda el resultado en el campo `giftee_id` de $p_i$.
+    7. Calcula $AES-CTR_{k}(giftee_pk)$ y guarda el resultado en el campo `giftee_pk` de $p_i$.
+    8. Calcula $AES-CTR_{k}(gifter_pk)$ y guarda el resultado en el campo `gifter_pk` de $p_i$.
 8. El servidor descarta $k$.
 

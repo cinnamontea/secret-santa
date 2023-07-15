@@ -1,4 +1,5 @@
 {% extends 'santa_raffle/base.html' %}
+{% load static %}
 
 {% block subtitle %}
     Eventos
@@ -42,7 +43,7 @@
                 {% endfor %}
             </ul>
             
-            {% if request.user.pk == event.organizer.pk %}
+            {% if request.user.pk == event.organizer.pk and not event.raffle_date %}
                 <form action="{% url 'start_raffle' pk=event.pk %}" method="POST"> {% csrf_token %}
                     <button type="submit">Iniciar sorteo</button>
                 </form>
@@ -55,7 +56,33 @@
                     </form>
                 </div>
             {% endif %}
+
+            {% if event.raffle_date %}
+                <div>
+                    <p>Los resultados del sorteo ya están disponibles. Para desencriptar la información, por favor selecciona el archivo con tu clave privada y presiona <strong>Desencriptar</strong>.</p>
+                    <label for"skey">Selecciona tu clave privada:</label>
+                    <input type="file" id="skey">
+                    <button type="button" onclick="displayEventResults()" style="display:block">Desencriptar</button>
+                    <p id="dec_errors" style="color:red"></p>
+                    <div id="eventres" style="display:none">
+                        <input type="hidden" id="enc_event_key" value="{{participant.event_key}}">
+                        <input type="hidden" id="enc_giftee_id" value="{{participant.giftee_id}}">
+                        <input type="hidden" id="enc_giftee_pk" value="{{participant.giftee_pka}}">
+                        <input type="hidden" id="enc_gifter_pk" value="{{participant.gifter_pka}}">
+                        <p><strong>Drumroll please!!!</strong></p>
+                        <p>Tienes que hacerle un bonito regalo a <strong><output id="giftee_id"></output></strong></p>
+                        <p>Su clave pública es:</p>
+                        <textarea id="giftee_pk" rows="5" cols="33" readonly style="display:block"></textarea>
+                        <p>Tu clave de evento es: <strong><output id="ekey"></output></strong></p>
+                        <p>La clave pública de tu amigo secreto es:</p>
+                        <textarea id="gifter_pk" rows="5" cols="33" readonly style="display:block"></textarea>
+
+                    </div>
+                </div>
+            {% endif%}
         </div>
         <br>
     </div>
+    <script src="{% static 'scripts/crypto.js' %}"></script>
+    <script src="{% static 'scripts/event.js' %}"></script>
 {% endblock %}

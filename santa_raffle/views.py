@@ -33,14 +33,20 @@ def event_detail(request, pk):
     user = request.user
     if not user.is_authenticated or len(event.participant_set.filter(owner=user)) == 0:
         # Take the user to a «This event doesn't exist or you are not a participant.» page.
-        pass
+        # For now, redirect the user to the home page.
+        return redirect('home_feed')
+    
+    # This access is safe because we already checked that the current user is a participant of the event.
+    p = event.participant_set.get(owner=user)
+    print(p.giftee_id)
 
     # EventMembersFormSet populates the list of invitable people:
     form = EventMembersFormSet(members.values_list('owner__id'))
     return render(request, 'santa_raffle/event_detail.html', 
                   {'event': event,
                    'members': members,
-                   'form': form
+                   'form': form,
+                   'participant': p,
                    })
 
 
@@ -120,7 +126,9 @@ def start_raffle(request, pk):
         req2 = True
         for participant in participants:
             req2 = req2 and participant.confirmed
-        if req1 and req2:
+        # Check that the event hasn't been raffled yet.
+        req3 = not event.raffle_date
+        if req1 and req2 and req3:
             # DO RAFFLE
 
             # Fix the list of participants.
