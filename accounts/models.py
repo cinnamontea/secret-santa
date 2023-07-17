@@ -22,6 +22,7 @@ class CryptoKey(models.Model):
 
 class CustomUser(AbstractUser):
     likes = models.TextField(blank=True, null=True) #(for now, to make it simple)
+    pubkey = models.TextField(blank=True, null=False)
  
     def __str__(self):
         return self.username

@@ -9,13 +9,13 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "password1", "password2")
+        fields = ("username", "email", "password1", "password2", "pubkey")
 
 class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email")
+        fields = ("username", "email", "pubkey")
 
 class LoginForm(forms.ModelForm):
 
