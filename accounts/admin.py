@@ -16,13 +16,13 @@ class CustomUserAdmin(UserAdmin):
 
 class EventAdmin(admin.ModelAdmin):
     model = Event
-    list_display = ["organizer", "title", "created_date", "raffle_date", "event_date"]
+    list_display = ["organizer", "title", "created_date", "raffle_date", "event_date", ]
     exclude = ("raffle_date", "created_date", "pkey_list",)
 
 
 class ParticipantAdmin(admin.ModelAdmin):
     model = Participant
-    list_display = ["owner", "event", "giftee_data"]
+    list_display = ["owner", "event", "giftee_data", "confirmed"]
     #exclude = ("gifter_pka", "gifter_prk", "gifter_srk", "giftee_pka", "giftee_id",)
 
 

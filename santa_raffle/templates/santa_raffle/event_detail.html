@@ -6,13 +6,23 @@
 
 {% block content %}
     <div>
-        <h3>{{ event.title }}</h3>
+        <h3>{{ event.title }}
+        {% if request.user.pk == event.organizer.pk %}
+            <a href="{% url 'edit_event' pk=event.pk %}"><button>Editar</button></a>
+        {% endif %}
+        </h3>
         <p>Fecha de creación: {{ event.created_date }}</p>
             {% if event.event_date %}
                 <p>Fecha programada para el evento: {{ event.event_date }}</p> <!-- idea: (faltan X días!) -->
             {% endif %}
         <div>
-            <p>Miembros:</p>
+            <p>Miembros:
+                <!--
+                {% if request.user.pk == event.organizer.pk %}
+                    (<a href="{% url 'edit_event' pk=event.pk %}">Editar</a>)
+                {% endif %}
+                -->
+            </p>
             <ul>
                 {% for member in members %}
                     <li>
@@ -20,9 +30,31 @@
                         {% if member.owner__id == event.organizer.pk %}
                             <i>(organizador)</i>
                         {% endif %}
+                        <!--
+                        {% if request.user.pk == member.owner__id %}
+                            <input type="checkbox" value="{{member.confirmed}}"/>
+                        {% else %}
+                            <input type="checkbox" value="{{member.confirmed}}" disabled/>
+                        {% endif %}
+                        -->
+                        <input type="checkbox" value="{{member.confirmed}}" disabled/>
                     </li>
                 {% endfor %}
             </ul>
+            
+            {% if request.user.pk == event.organizer.pk %}
+                <form action="{% url 'start_raffle' pk=event.pk %}" method="POST"> {% csrf_token %}
+                    <button type="submit">Iniciar sorteo</button>
+                </form>
+
+                <div><!-- hidden="True"-->
+                    <h4>Invitar usuarios:</h4>
+                    <form action="{% url 'event_invites' pk=event.pk %}" method="POST"> {% csrf_token %}
+                            {{ form.as_p }}
+                        <input type='submit' value="Enviar"></input>
+                    </form>
+                </div>
+            {% endif %}
         </div>
         <br>
     </div>

@@ -1,0 +1,12 @@
+{% extends 'santa_raffle/base.html' %}
+
+{% block subtitle %}
+Crear o editar eventos
+{% endblock %}
+
+{% block content %}
+<form method="POST"> {% csrf_token %}
+    {{ form.as_p }}
+    <button type='submit'>Guardar</button>
+</form>
+{% endblock %}

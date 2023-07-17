@@ -4,10 +4,15 @@
 Welcome!
 {% endblock %}
 
+{% block notification %}
+{% endblock %}
+
 {% block content %}
     {% if request.user.is_authenticated %}
         Estás autenticade como <strong> {{ request.user.username }} </strong> | 
         <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        <br> <br>
+        <b><a href="{% url 'new_event' %}">Crear Evento</a></b>
     {% else %}
         No has iniciado sesión. | 
         <a href="{% url 'login' %}">Iniciar Sesión</a> | 
@@ -17,8 +22,34 @@ Welcome!
     {% for event in events %}
         <div>
             <a href="{% url 'event_detail' pk=event.event__id %}"><h3>{{ event.event__title }}</h3></a>
-            <p>Creado por: <a href="profile/"> {{ event.event__organizer }} </p></a>
-            <br>
+            {% if event.event__organizer.pk != request.user.pk and not event.confirmed %}
+                <p>
+                    <a href="profile/"> {{ event.event__organizer }}</a> te ha invitado a su evento!
+                    <br>¿Te interesa participar?
+                </p>
+                <form action="{% url 'update_confirmation' pk=event.event__id resp=1 %}" method='POST'>
+                    {% csrf_token %}
+                    <button type="submit">Confirmar</button>
+                </form>
+                <form action="{% url 'update_confirmation' pk=event.event__id resp=0 %}" method='POST'>
+                    {% csrf_token %}
+                    <button type="submit">Rechazar</button>
+                </form>
+                <br>
+            {% elif event.confirmed is False %}
+                <p>Creado por: <a href="profile/"> {{ event.event__organizer }} </p></a>
+                <p>
+                        ¡Aún no has confirmado tu propio evento!
+                    <form action="{% url 'update_confirmation' pk=event.event__id resp=1 %}" method='POST'>
+                        {% csrf_token %}
+                        <button value=True type='submit'>Confirmar</button>
+                        <!--<button value=False type='submit'>Eliminar</button>-->
+                    </form>
+                </p>
+            {% else %}
+                <p>Creado por: <a href="profile/"> {{ event.event__organizer }} </p></a>
+            {% endif %}
+                <br>
         </div>
     {% empty %}
         {% if request.user.is_authenticated %}

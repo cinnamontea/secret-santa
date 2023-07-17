@@ -16,21 +16,12 @@ class CryptoKeyManager(models.Manager):
 
 class CryptoKey(models.Model):
     objects = CryptoKeyManager()
-    value = models.TextField(max_length=200, editable=False)
+    value = models.UUIDField(default=uuid.uuid4, editable=False)
+    order = models.PositiveSmallIntegerField(name="order", default=0)
 
 
 class CustomUser(AbstractUser):
     likes = models.TextField(blank=True, null=True) #(for now, to make it simple)
-    # pka = models.OneToOneField(CryptoKey, related_name="pka", on_delete=models.CASCADE, null=True, editable=False)
-    # ska = models.OneToOneField(CryptoKey, related_name="ska", on_delete=models.CASCADE, null=True, editable=False)
-
+ 
     def __str__(self):
         return self.username
-    
-    # def save(self, *args, **kwargs):
-    #     # Do custom logic here (key creation in this case)
-    #     if self.pka is None and self.ska is None:
-    #         self.pka = CryptoKey.objects.create_pka()
-    #         self.ska = CryptoKey.objects.create_ska()
-    #         # Run default save() method
-    #         super(CustomUser,self).save(*args, **kwargs)
