@@ -71,22 +71,72 @@
                     <div id="eventres" style="display:none">
                         <input type="hidden" id="enc_event_key" value="{{participant.event_key}}">
                         <input type="hidden" id="enc_giftee_id" value="{{participant.giftee_id}}">
-                        <input type="hidden" id="enc_giftee_pk" value="{{participant.giftee_pka}}">
-                        <input type="hidden" id="enc_gifter_pk" value="{{participant.gifter_pka}}">
+                        <input type="hidden" id="enc_giftee_chat_id" value="{{participant.giftee_chat_id}}">
+                        <input type="hidden" id="enc_giftee_chat_key" value="{{participant.giftee_chat_key}}">
+                        <input type="hidden" id="enc_gifter_chat_id" value="{{participant.gifter_chat_id}}">
+                        <input type="hidden" id="enc_gifter_chat_key" value="{{participant.gifter_chat_key}}">
                         <p><strong>Drumroll please!!!</strong></p>
                         <p>Tienes que hacerle un bonito regalo a <strong><output id="giftee_id"></output></strong></p>
-                        <p>Su clave pública es:</p>
-                        <textarea id="giftee_pk" rows="5" cols="33" readonly style="display:block"></textarea>
                         <p>Tu clave de evento es: <strong><output id="ekey"></output></strong></p>
-                        <p>La clave pública de tu amigo secreto es:</p>
-                        <textarea id="gifter_pk" rows="5" cols="33" readonly style="display:block"></textarea>
+                        <p>El ID del chat con tu giftee es: <strong><output id="giftee_chat_id"></output></strong></p>
+                        <p>La clave simétrica del chat con tu giftee es: <strong><output id="giftee_chat_key"></output></strong></p>
+                        <p>El ID del chat con tu amigo secreto es: <strong><output id="gifter_chat_id"></output></strong></p>
+                        <p>La clave simétrica del chat con tu amigo secreto es: <strong><output id="gifter_chat_key"></output></strong></p>
 
                     </div>
                 </div>
             {% endif%}
+
+            {# BEGIN REMOVE LATER #}
+
+                <div>
+                    <button type="button" onclick="testFetchGet()">Test GET</button>
+                    <button type="button" onclick="testFetchPost()">Test POST</button>
+                    
+                </div>
+
+            {# END REMOVE LATER #}
         </div>
         <br>
     </div>
     <script src="{% static 'scripts/crypto.js' %}"></script>
     <script src="{% static 'scripts/event.js' %}"></script>
+    <script>
+        function testFetchGet() {
+
+            fetch("{% url 'getmsgs' %}", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                redirect: "follow",
+            })
+            .then((response) => response.json())
+            .then((thedata) => {
+                console.log(thedata);
+            })
+            .catch((err) => {
+                console.log(`An error occurred in fetch get request: ${err}`);
+            })
+
+        }
+
+        function testFetchPost() {
+            fetch("{% url 'getmsgs' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}',
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({chat_id: 12, msg: "Hi"}),
+            })
+            .then((response) => response.json())
+            .then((thedata) => {
+                console.log(thedata);
+            })
+            .catch((err) => {
+                console.log(`An error occurred in fetch get request: ${err}`);
+            })
+        }
+    </script>
 {% endblock %}

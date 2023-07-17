@@ -13,14 +13,18 @@ function displayEventResults() {
     // Encrypted event info.
     var encEKey = document.getElementById("enc_event_key").value;
     var encGeeId = document.getElementById("enc_giftee_id").value;
-    var encGeePK = document.getElementById("enc_giftee_pk").value;
-    var encGerPK = document.getElementById("enc_gifter_pk").value;
+    var encGeeCID = document.getElementById("enc_giftee_chat_id").value;
+    var encGeeCK = document.getElementById("enc_giftee_chat_key").value;
+    var encGerCID = document.getElementById("enc_gifter_chat_id").value;
+    var encGerCK = document.getElementById("enc_gifter_chat_key").value;
 
     // Elements where the decrypted info will be shown.
     var eKey = document.getElementById("ekey");
     var geeId = document.getElementById("giftee_id");
-    var geePK = document.getElementById("giftee_pk");
-    var gerPK = document.getElementById("gifter_pk");
+    var geeCID = document.getElementById("giftee_chat_id");
+    var geeCK = document.getElementById("giftee_chat_key");
+    var gerCID = document.getElementById("gifter_chat_id");
+    var gerCK = document.getElementById("gifter_chat_key");
     
     // Decrypt and display the info.
     skFileElem.files[0].text()
@@ -28,13 +32,15 @@ function displayEventResults() {
     .then((key) => decryptRSA_OAEP(encEKey, key))
     .then((decEKey) => {
         eKey.value = decEKey;
-        return decryptEventResults(decEKey, encGeeId, encGeePK, encGerPK)
+        return decryptEventResults(decEKey, encGeeId, encGeeCID, encGeeCK, encGerCID, encGerCK)
     })
     .then((decInfo) => {
-        let {"geeId": decGeeId, "geePK": decGeePK, "gerPK": decGerPK} = decInfo;
+        let {"geeId": decGeeId, "geeCID": decGeeCID, "geeCK": decGeeCK, "gerCID": decGerCID, "gerCK": decGerCK} = decInfo;
         geeId.value = decGeeId;
-        geePK.value = decGeePK;
-        gerPK.value = decGerPK;
+        geeCID.value = decGeeCID;
+        geeCK.value = decGeeCK;
+        gerCID.value = decGerCID;
+        gerCK.value = decGerCK;
     })
     .catch((err) => {
         decErrsElem.innerHTML = `Ocurrió un error al intentar desencriptar la información.\nVerifica que seleccionaste la clave privada correcta.\n${err}`;
@@ -44,13 +50,15 @@ function displayEventResults() {
 }
 
 
-async function decryptEventResults(ekey, encGeeId, encGeePK, encGerPK) {
+async function decryptEventResults(ekey, encGeeId, encGeeCID, encGeeCK, encGerCID, encGerCK) {
     let pemKey = "-----BEGIN SYMMETRIC KEY-----\n" + ekey + "\n-----END SYMMETRIC KEY-----;"
     let key = await importKey(pemKey, "symmetric");
     let geeId = await decryptAESCTR(encGeeId, key);
-    let geePK = await decryptAESCTR(encGeePK, key);
-    let gerPK = await decryptAESCTR(encGerPK, key);
+    let geeCID = await decryptAESCTR(encGeeCID, key);
+    let geeCK = await decryptAESCTR(encGeeCK, key);
+    let gerCID = await decryptAESCTR(encGerCID, key);
+    let gerCK = await decryptAESCTR(encGerCK, key);
 
-    return {"geeId": geeId, "geePK": geePK, "gerPK": gerPK};
+    return {"geeId": geeId, "geeCID": geeCID, "geeCK": geeCK, "gerCID": gerCID, "gerCK": gerCK};
 }
 

@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import EventForm, EventMembersForm, EventMembersFormSet
 from .models import Event, Participant, CustomUser, CryptoKey
+from django.http import JsonResponse
 from django.utils import timezone
-from random import shuffle
-from .crypto import aesctr, rsaoaep
+import json
+from .crypto import aesctr, rsaoaep, strongrand
 
 # Create your views here.
 
@@ -38,7 +39,6 @@ def event_detail(request, pk):
     
     # This access is safe because we already checked that the current user is a participant of the event.
     p = event.participant_set.get(owner=user)
-    print(p.giftee_id)
 
     # EventMembersFormSet populates the list of invitable people:
     form = EventMembersFormSet(members.values_list('owner__id'))
@@ -134,43 +134,69 @@ def start_raffle(request, pk):
             # Fix the list of participants.
             ps = [p for p in event.participant_set.all()]
             n = len(ps)
-            # Suffle it.
-            shuffle(ps)
+            # Shuffle it.
+            sps = strongrand.shufflelist(ps)
 
-            for i, p in enumerate(ps):
-                gifter = ps[(i-1)%n]  # p's secret santa is the participant that appears before in the list.
-                giftee = ps[(i+1)%n]  # dual argument
-                # Generate a random event key. It will be used to encrypt the event secrets of this participant.
-                # The key itself will be encrypted with p's public RSA key, so that only they can recover the event key.
-                ekey = aesctr.generateKey256()
+            # Generate a random event key for each participant. It will be used to encrypt the event secrets of each participant.
+            # We generate the list before because in each iteration we'll need the event key of our gifter in order to encrypt some info.
+            # Check out the code below to get a better understanding of what's going on.
+            # The keys themselves will be encrypted with the public RSA key of the corresponding participant, so that only they can recover the event key.
+            ekeys = [aesctr.generateKey256() for _ in range(n)]
+
+            for i, p in enumerate(sps):
+                gifter = sps[(i-1)%n]  # p's secret santa is the participant that appears before in the list.
+                giftee = sps[(i+1)%n]  # dual argument
                 
-                # Get p's public RSA key, use it to encrypt the event key, and save the result.
+                # Retrieve the event key of the current participant and their gifter.
+                p_ek = ekeys[i]
+                p_gifter_ek = ekeys[(i-1)%n]
+                
+                # Get p's public RSA key, use it to encrypt this participant's event key, and save the result.
                 p_pubk = rsaoaep.import_pk_string(p.owner.pubkey)
-                p.event_key = rsaoaep.encrypt(ekey, p_pubk)
+                p.event_key = rsaoaep.encrypt(p_ek, p_pubk)
 
-                # We will encrypt everything else with p's event key.
-                p.giftee_id = aesctr.encrypt(giftee.owner.username, ekey)
-                p.giftee_pka = aesctr.encrypt(giftee.owner.pubkey, ekey)
-                p.gifter_pka = aesctr.encrypt(gifter.owner.pubkey, ekey)
+                # We will encrypt all the info that belongs to this participant with their event key.
+                p.giftee_id = aesctr.encrypt(giftee.owner.username, p_ek)
+                
+                # For each pair gifter/giftee, assign a chat ID and generate a symmetric key to encrypt chat messages.
+                # Since the participants have already been shuffled, we can assign chat IDs in order starting from 0. We'll use index i.
+                # Chat IDs are only unique for an Event.
+                
+                chat_key = aesctr.generateKey256()
+                p.gifter_chat_id = aesctr.encrypt(str(i), p_ek)
+                p.gifter_chat_key = aesctr.encrypt(chat_key, p_ek)
+                # Encrypt the info of p's gifter with their event key, otherwise they won't be able to retrieve this info.
+                gifter.giftee_chat_id = aesctr.encrypt(str(i), p_gifter_ek)
+                gifter.giftee_chat_key = aesctr.encrypt(chat_key, p_gifter_ek)
+                gifter.save()
+
+                # We only set the data for p's gifter. Because the next iteration will set p's giftee_chat_id and key.
+
                 p.save()
 
-            """ # -------TEMP CODE----------
-            # for now, pkeys'll be generated randomly (to have something to sort)
-            n_mems = len(participants)
-            while len(event.pkey_list.all()) != n_mems:
-                key_list = [CryptoKey.objects.create() for _ in range(n_mems)]
-                [event.pkey_list.add(key) for key in key_list]
-            
-            # create shuffled list of indexes:
-            order_list = [*range(n_mems)]
-            shuffle(order_list)
-            # set shuffled 'order' indexes:
-            for i,k in enumerate(event.pkey_list.all()):
-                k.order = order_list[i]
-                k.save()
-            # -------TEMP CODE---------- """
             event.raffle_date = timezone.now()
             event.save()
         return redirect('event_detail', pk=event.pk)
     else:
         return render(request, 'santa_raffle/event_detail.html')
+
+
+def test_fetch_api(request):
+    print(request.method)
+    if not request.user.is_authenticated:
+        print("User not auth")
+        return JsonResponse({})
+    
+    if request.method == "POST":
+        print("Post req")
+        body=json.loads(request.body)
+        print(body.keys())
+        chat_id = body.get('chat_id')
+        msg = body.get('msg')
+        return JsonResponse({'success': True, 'type': 'post', 'rec_chat_id': chat_id, 'rec_msg': msg})
+    elif request.method == "GET":
+        print("Get req")
+        return JsonResponse({'success': True, 'type': 'get'})
+    else:
+        print("Other method")
+        return JsonResponse({})
