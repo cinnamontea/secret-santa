@@ -1,5 +1,4 @@
-# Entrega Parcial
-
+# Amigo Secreto Criptográfico
 ## Instalación
 
 Para ejecutar el proyecto es necesario seguir los siguientes pasos:
@@ -69,7 +68,7 @@ Se pueden separar los objetivos del proyecto en dos partes:
     - Ningún participante A puede obtener el nombre de su amigo secreto B (donde B le regala a A).
     - Las conversaciones entre los participantes deben ser privadas.
 
-## Avances
+## Avances Entrega Parcial
 
 El lenguaje de programación elegido para el proyecto es Python. La aplicación web se está realizando en Django.
 
