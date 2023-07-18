@@ -71,22 +71,60 @@
                     <div id="eventres" style="display:none">
                         <input type="hidden" id="enc_event_key" value="{{participant.event_key}}">
                         <input type="hidden" id="enc_giftee_id" value="{{participant.giftee_id}}">
-                        <input type="hidden" id="enc_giftee_pk" value="{{participant.giftee_pka}}">
-                        <input type="hidden" id="enc_gifter_pk" value="{{participant.gifter_pka}}">
+                        <input type="hidden" id="enc_giftee_chat_id" value="{{participant.giftee_chat_id}}">
+                        <input type="hidden" id="enc_giftee_chat_key" value="{{participant.giftee_chat_key}}">
+                        <input type="hidden" id="enc_gifter_chat_id" value="{{participant.gifter_chat_id}}">
+                        <input type="hidden" id="enc_gifter_chat_key" value="{{participant.gifter_chat_key}}">
                         <p><strong>Drumroll please!!!</strong></p>
                         <p>Tienes que hacerle un bonito regalo a <strong><output id="giftee_id"></output></strong></p>
-                        <p>Su clave pública es:</p>
-                        <textarea id="giftee_pk" rows="5" cols="33" readonly style="display:block"></textarea>
                         <p>Tu clave de evento es: <strong><output id="ekey"></output></strong></p>
-                        <p>La clave pública de tu amigo secreto es:</p>
-                        <textarea id="gifter_pk" rows="5" cols="33" readonly style="display:block"></textarea>
+                        <p>El ID del chat con tu giftee es: <strong><output id="giftee_chat_id"></output></strong></p>
+                        <p>La clave simétrica del chat con tu giftee es: <strong><output id="giftee_chat_key"></output></strong></p>
+                        <p>El ID del chat con tu amigo secreto es: <strong><output id="gifter_chat_id"></output></strong></p>
+                        <p>La clave simétrica del chat con tu amigo secreto es: <strong><output id="gifter_chat_key"></output></strong></p>
 
                     </div>
                 </div>
+
+                <div id="event_chats" style="display:none">
+                    <p> Puedes usar los siguientes chats para comunicarte con tu amigo secreto y con la persona a la que tienes que hacerle un regalo. </p>
+                    <div>
+                        <p> Chat con <strong><output id="giftee_name"></output></strong>.</p>
+                        <textarea id="chat_giftee" rows="5" cols="39" style="display:block;resize:none" readonly></textarea>
+                        <input type="text" id="msg_giftee">
+                        <button type="button" onclick="sendMessage('giftee')">Send</button>
+                        <button type="button" onclick="refreshChats()">Refrescar</button>
+                    </div>
+                    <div>
+                        <p> Chat con tu <strong>amigo secreto</strong>.</p>
+                        <textarea id="chat_gifter" rows="5" cols="39" style="display:block;resize:none" readonly></textarea>
+                        <input type="text" id="msg_gifter">
+                        <button type="button" onclick="sendMessage('gifter')">Send</button>
+                        <button type="button" onclick="refreshChats()">Refrescar</button>
+                    </div>
+                
+                </div>
             {% endif%}
+
+            {# BEGIN REMOVE LATER #}
+
+                <div>
+                    <button type="button" onclick="testFetchGet()">Test GET</button>
+                    <button type="button" onclick="testFetchPost()">Test POST</button>
+                    <button type="button" onclick="printGlobals()">Globals</button>
+                    
+                </div>
+
+            {# END REMOVE LATER #}
         </div>
         <br>
     </div>
     <script src="{% static 'scripts/crypto.js' %}"></script>
+    <script>
+        var csrfToken = "{{csrf_token}}";
+        var getMessageURL = "{% url 'getmsgs' event_pk=event.pk %}";
+        var sendMessageURL = "{% url 'sendmsg' %}";
+        var eventPK = "{{ event.pk }}";
+    </script>
     <script src="{% static 'scripts/event.js' %}"></script>
 {% endblock %}

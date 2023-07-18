@@ -48,6 +48,15 @@ class Participant(models.Model):
     # The event key is a symmetric AES key. It is encrypted using the owner's public RSA-OAEP key.
     event_key = models.TextField(null=False, blank=True)
     # The contents of the following fields are encrypted with the participant's event key.
-    gifter_pka = models.TextField(null=False, blank=True)
-    giftee_pka = models.TextField(null=False, blank=True)
     giftee_id = models.TextField(null=False, blank=True)
+    gifter_chat_id = models.CharField(null=False, blank=True, max_length=300)
+    gifter_chat_key = models.CharField(null=False, blank=True, max_length=300)
+    giftee_chat_id = models.CharField(null=False, blank=True, max_length=300)
+    giftee_chat_key = models.CharField(null=False, blank=True, max_length=300)
+
+
+class Message(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    chat_id = models.CharField(max_length=300)
+    msg = models.CharField(max_length=100)
