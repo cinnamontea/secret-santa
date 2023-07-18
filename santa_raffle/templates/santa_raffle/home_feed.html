@@ -54,8 +54,8 @@ Welcome!
     {% empty %}
         {% if request.user.is_authenticated %}
             <!-- *Inserte aquí lista o mensaje de que no hay nada* -->
-            <i>En este momento no estás asociado a ningún evento :c </i>
-            <p> Protip: Puedes organizar tu propio evento con el botón... </p>
+            <br><i>En este momento no estás asociado a ningún evento :c </i>
+            <p> <b>Protip:</b> ¡Puedes empezar tu propio evento al presionar "Crear Evento"! </p>
         {% endif %}
     {% endfor %}
 {% endblock %}
