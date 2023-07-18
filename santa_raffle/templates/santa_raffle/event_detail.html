@@ -92,6 +92,7 @@
                 <div>
                     <button type="button" onclick="testFetchGet()">Test GET</button>
                     <button type="button" onclick="testFetchPost()">Test POST</button>
+                    <button type="button" onclick="printGlobals()">Globals</button>
                     
                 </div>
 
@@ -104,7 +105,7 @@
     <script>
         function testFetchGet() {
 
-            fetch("{% url 'getmsgs' %}", {
+            fetch("{% url 'getmsgs' event_pk=event.pk %}", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -122,13 +123,13 @@
         }
 
         function testFetchPost() {
-            fetch("{% url 'getmsgs' %}", {
+            fetch("{% url 'sendmsg' %}", {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": '{{csrf_token}}',
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({chat_id: 12, msg: "Hi"}),
+                body: JSON.stringify({event_pk: "{{ event.pk }}", chat_id: 0, msg: "Hi"}),
             })
             .then((response) => response.json())
             .then((thedata) => {
@@ -137,6 +138,17 @@
             .catch((err) => {
                 console.log(`An error occurred in fetch get request: ${err}`);
             })
+        }
+
+        function printGlobals() {
+
+            console.log(secretKey);
+            console.log(eventKey);
+            console.log(gifteeId);
+            console.log(gifteeCID);
+            console.log(gifteeCK);
+            console.log(gifterCID);
+            console.log(gifterCK);
         }
     </script>
 {% endblock %}

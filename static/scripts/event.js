@@ -1,3 +1,12 @@
+var secretKey;
+var eventKey;
+var gifteeId;
+var gifteeCID;
+var gifteeCK;
+var gifterCID;
+var gifterCK;
+
+
 function displayEventResults() {
     var skFileElem = document.getElementById("skey");
     var decErrsElem = document.getElementById("dec_errors");
@@ -29,18 +38,27 @@ function displayEventResults() {
     // Decrypt and display the info.
     skFileElem.files[0].text()
     .then((rawKey) => importKey(rawKey, "private"))
-    .then((key) => decryptRSA_OAEP(encEKey, key))
+    .then((key) => {
+        secretKey = key;
+        return decryptRSA_OAEP(encEKey, key)
+    })
     .then((decEKey) => {
+        eventKey = decEKey;
         eKey.value = decEKey;
         return decryptEventResults(decEKey, encGeeId, encGeeCID, encGeeCK, encGerCID, encGerCK)
     })
     .then((decInfo) => {
         let {"geeId": decGeeId, "geeCID": decGeeCID, "geeCK": decGeeCK, "gerCID": decGerCID, "gerCK": decGerCK} = decInfo;
         geeId.value = decGeeId;
+        gifteeId = decGeeId;
         geeCID.value = decGeeCID;
+        gifteeCID = decGeeCID;
         geeCK.value = decGeeCK;
+        gifteeCK = decGeeCK;
         gerCID.value = decGerCID;
+        gifterCID = decGerCID;
         gerCK.value = decGerCK;
+        gifterCK = decGerCK;
     })
     .catch((err) => {
         decErrsElem.innerHTML = `Ocurrió un error al intentar desencriptar la información.\nVerifica que seleccionaste la clave privada correcta.\n${err}`;

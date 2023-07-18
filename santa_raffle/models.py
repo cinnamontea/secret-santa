@@ -53,3 +53,10 @@ class Participant(models.Model):
     gifter_chat_key = models.CharField(null=False, blank=True, max_length=300)
     giftee_chat_id = models.CharField(null=False, blank=True, max_length=300)
     giftee_chat_key = models.CharField(null=False, blank=True, max_length=300)
+
+
+class Message(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(blank=True, null=True)
+    chat_id = models.CharField(max_length=300)
+    msg = models.CharField(max_length=100)

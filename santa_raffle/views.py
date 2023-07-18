@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import EventForm, EventMembersForm, EventMembersFormSet
-from .models import Event, Participant, CustomUser, CryptoKey
+from .models import Event, Participant, Message, CustomUser
 from django.http import JsonResponse
 from django.utils import timezone
 import json
@@ -179,24 +179,39 @@ def start_raffle(request, pk):
         return redirect('event_detail', pk=event.pk)
     else:
         return render(request, 'santa_raffle/event_detail.html')
+    
 
-
-def test_fetch_api(request):
-    print(request.method)
+def get_messages(request, event_pk):
     if not request.user.is_authenticated:
-        print("User not auth")
+        return JsonResponse({})
+    
+    if request.method == "GET":
+        event = get_object_or_404(Event, pk=event_pk)
+        msgs = event.message_set.all().order_by('timestamp')
+        ser_msgs = []
+        for msg in msgs:
+            ser_msgs.append({
+                'chat_id': msg.chat_id,
+                'timestamp': msg.timestamp,
+                'msg': msg.msg
+            })
+        return JsonResponse({'success': True, 'msgs': ser_msgs})
+    else:
+        return JsonResponse({})
+    
+
+def send_message(request):
+    if not request.user.is_authenticated:
         return JsonResponse({})
     
     if request.method == "POST":
-        print("Post req")
         body=json.loads(request.body)
-        print(body.keys())
+        event_pk = body.get('event_pk')
         chat_id = body.get('chat_id')
         msg = body.get('msg')
-        return JsonResponse({'success': True, 'type': 'post', 'rec_chat_id': chat_id, 'rec_msg': msg})
-    elif request.method == "GET":
-        print("Get req")
-        return JsonResponse({'success': True, 'type': 'get'})
+        event = get_object_or_404(Event, pk=event_pk)
+        m = Message(event=event, chat_id=chat_id, timestamp=timezone.now(), msg=msg)
+        m.save()
+        return JsonResponse({'success': True})
     else:
-        print("Other method")
         return JsonResponse({})
